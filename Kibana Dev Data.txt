@@ -1,0 +1,185 @@
+# Welcome to the Dev Tools Console!
+#
+# You can use Console to explore the Elasticsearch API. See the Elasticsearch API reference to learn more:
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
+#
+# Here are a few examples to get you started.
+
+
+# Create an index
+PUT /my-index
+
+
+# Add a document to my-index
+POST /my-index/_doc
+{
+    "id": "park_rocky-mountain",
+    "title": "Rocky Mountain",
+    "description": "Bisected north to south by the Continental Divide, this portion of the Rockies has ecosystems varying from over 150 riparian lakes to montane and subalpine forests to treeless alpine tundra."
+}
+
+# Perform a search in my-index
+GET /my-index/_search?q="rocky mountain"
+
+# Getting the list of index.
+GET _cat/indices
+
+# Getting the tbl_reporters data.
+GET tbl_reporters/_search
+
+# Getting the tbl_reporters settings.
+GET tbl_reporters/_settings
+
+# Getting the tbl_reporters mappings.
+GET tbl_reporters/_mapping
+
+# Getting the number of documents (records).
+GET tbl_reporters/_count
+
+# Adding a custom document.
+POST /tbl_reporters/_doc/1970
+{
+  "name": "Ahmed Khatib",
+  "outlet_id": 6969,
+  "city": "Navi Mumbai",
+  "state": "Maharashtra",
+  "country_code": "IN",
+  "associations": "",
+  "topics": "Fantasy",
+  "twitter_description": "Yet another software engineer (YASE).",
+  "pitch": "I don't know man",
+  "last_updated": ""
+}
+
+# Finding the custom document.
+GET tbl_reporters/_search
+{
+  "query": {
+    "match_phrase": {
+      "twitter_description": "software engineer"
+    }
+  }
+}
+
+# Getting selected attributes.
+GET tbl_reporters/_search
+{
+  "_source": ["name", "associations"]
+}
+
+# Adding search limit.
+GET tbl_reporters/_search
+{
+  "size": 30
+}
+
+# Matching phrase (words should be in the order).
+GET tbl_reporters/_search
+{
+  "query": {
+    "match_phrase": {
+      "twitter_description": "global investigations"
+    }
+  }
+}
+
+# Using match phrase without words in order.
+GET tbl_reporters/_search
+{
+  "query": {
+    "match_phrase": {
+      "twitter_description": "investigations global"
+    }
+  }
+}
+
+
+# Using match for words without in order.
+GET tbl_reporters/_search
+{
+  "query": {
+    "match": {
+      "twitter_description": "investigations global"
+    }\
+  }
+}
+
+# Single aggregation query.
+GET tbl_reporters/_search
+{
+  "size": 0,
+  "aggs": {
+    "associations": {
+      "terms": {
+        "field": "associations.keyword",
+        "size": 10,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+# Multipleaggregation query.
+GET tbl_reporters/_search
+{
+  "size": 0,
+  "aggs": {
+    "associations": {
+      "terms": {
+        "field": "associations.keyword",
+        "size": 10,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    },
+    "countries": {
+      "terms": {
+        "field": "country_code.keyword",
+        "size": 10,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+
+# Multipleaggregation query while excluding the empty strings.
+GET tbl_reporters/_search
+{
+  "query": {
+    "wildcard": {
+      "country_code": {
+        "value": "?*"
+      }
+    }
+  }, 
+  "size": 0,
+  "aggs": {
+    "associations": {
+      "terms": {
+        "field": "associations.keyword",
+        "size": 10,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    },
+    "countries": {
+      "terms": {
+        "field": "country_code.keyword",
+        "size": 10,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+
+
